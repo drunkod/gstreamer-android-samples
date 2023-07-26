@@ -17,7 +17,10 @@ class Tutorial2 : Activity() {
     private val nativeCustomData: Long = 0 // Native code will use this to keep private data:
     private var isPlayingDesired = false // Whether the user asked to go to PLAYING
 
-
+    private var isLocalMedia = false // Whether this clip is stored locally or is being streamed
+    private external fun nativeSetUri(uri: String?)// Set the URI of the media to play
+    private var mediaUri: String? = null // URI of the clip being played
+    private val  defaultMediaUri : String = "https://gstreamer.freedesktop.org/data/media/sintel_trailer-368p.ogv"
     // Called when the activity is first created.
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +34,7 @@ class Tutorial2 : Activity() {
             return
         }
         setContentView(R.layout.main)
+//        val pipelineInput = findViewById<View>(R.id.pipeline_input) as EditText
         val play = findViewById<View>(R.id.button_play) as ImageButton
         play.setOnClickListener {
             isPlayingDesired = true
@@ -65,6 +69,11 @@ class Tutorial2 : Activity() {
         super.onDestroy()
     }
 
+    // Set the URI to play, and record whether it is a local or remote file
+    private fun setMediaUri() {
+          nativeSetUri(mediaUri)
+          isLocalMedia = mediaUri?.startsWith("file://") ?: false
+        }
     // Called from native code. This sets the content of the TextView from the UI thread.
     private fun setMessage(message: String) {
         val tv = findViewById<View>(R.id.textview_message) as TextView
@@ -75,6 +84,8 @@ class Tutorial2 : Activity() {
     // the main loop is running, so it is ready to accept commands.
     private fun onGStreamerInitialized() {
         Log.i("GStreamer", "Gst initialized. Restoring state, playing:$isPlayingDesired")
+        // Restore previous playing state
+        //        setMediaUri() frizee!!!
         // Restore previous playing state
         if (isPlayingDesired) {
             nativePlay()
