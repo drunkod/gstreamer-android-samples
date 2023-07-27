@@ -5,6 +5,14 @@
     android:gravity="center_vertical"
     android:orientation="vertical" >
 
+    <!-- TextView to prompt user to enter URI -->
+    <TextView
+        android:id="@+id/textView_prompt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enter pipeline URI:"/>
+
+      <!-- EditText for user to pipeline URI -->
     <EditText
         android:id="@+id/pipeline_input"
         android:layout_width="match_parent"

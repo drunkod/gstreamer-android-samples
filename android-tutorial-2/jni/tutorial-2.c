@@ -257,19 +257,33 @@ gst_native_finalize (JNIEnv * env, jobject thiz)
     GST_DEBUG ("Done finalizing");
 }
 
-/* Set playbin's URI */
+/* Set playbin's URI Здесь объявляется функция gst_native_set_uri(),
+ * которая принимает в качестве параметров указатель JNIEnv, jobject и jstring.*/
 void
 gst_native_set_uri (JNIEnv * env, jobject thiz, jstring uri)
 {
+    //Он использует макрос GET_CUSTOM_DATA для получения указателя на структуру CustomData,
+    // содержащую информацию о трубопроводе. Указатель извлекается из
+    // поля custom_data_field_id Java-объекта.
   CustomData *data = GET_CUSTOM_DATA (env, thiz, custom_data_field_id);
   if (!data || !data->pipeline)
     return;
   const gchar *char_uri = (*env)->GetStringUTFChars (env, uri, NULL);
+  // получает строковую версию UTF-8 C переданного jstring URI.
   GST_DEBUG ("Setting URI to %s", char_uri);
+  // If the pipeline is in a state >= READY, set it back to READY state first.
+  // This ensures the URI can be set properly.
   if (data->target_state >= GST_STATE_READY)
     gst_element_set_state (data->pipeline, GST_STATE_READY);
+  // С помощью функции g_object_set()
+  // установите свойство "uri" элемента playbin в новую строку URI.
   g_object_set (data->pipeline, "uri", char_uri, NULL);
+  // Выдать полученную ранее строку в формате UTF-8.
+  // Освобождается выделенный ранее UTF-8 буфер char_uri
   (*env)->ReleaseStringUTFChars (env, uri, char_uri);
+  //Сбрасывает флаги duration и live,
+  // затем пытается вернуть трубопровод в предыдущее состояние.
+  // Возвращаемое значение показывает, находится ли он в режиме реального времени или нет.
   data->duration = GST_CLOCK_TIME_NONE;
   data->is_live =
       (gst_element_set_state (data->pipeline,

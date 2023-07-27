@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
@@ -21,20 +22,37 @@ class Tutorial2 : Activity() {
     private external fun nativeSetUri(uri: String?)// Set the URI of the media to play
     private var mediaUri: String? = null // URI of the clip being played
     private val  defaultMediaUri : String = "https://gstreamer.freedesktop.org/data/media/sintel_trailer-368p.ogv"
+
     // Called when the activity is first created.
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // Initialize GStreamer and warn if it fails
-        try {
-            init(this)
-        } catch (e: Exception) {
-            Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
-            finish()
-            return
-        }
+//        try {
+//            init(this)
+//        } catch (e: Exception) {
+//            Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
+//            finish()
+//            return
+//        }
         setContentView(R.layout.main)
-//        val pipelineInput = findViewById<View>(R.id.pipeline_input) as EditText
+
+        // Get references to TextView and EditText
+        val textViewPrompt = findViewById<TextView>(R.id.textView_prompt)
+        val pipelineInput = findViewById<View>(R.id.pipeline_input) as EditText
+        // Set click listener on EditText to retrieve entered URI
+        pipelineInput.setOnClickListener {
+          val enteredUri = pipelineInput.text.toString()
+
+          // Validate and process URI here
+
+          // For example:
+          if (enteredUri.isEmpty()) {
+            textViewPrompt.error = "Please enter a URI"
+          } else {
+            // URI is valid, continue processing
+          }
+        }
         val play = findViewById<View>(R.id.button_play) as ImageButton
         play.setOnClickListener {
             isPlayingDesired = true
@@ -56,7 +74,7 @@ class Tutorial2 : Activity() {
         // Start with disabled buttons, until native code is initialized
         findViewById<View>(R.id.button_play).isEnabled = false
         findViewById<View>(R.id.button_stop).isEnabled = false
-        nativeInit()
+//        nativeInit()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
