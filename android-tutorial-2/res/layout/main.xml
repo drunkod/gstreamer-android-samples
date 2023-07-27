@@ -32,6 +32,13 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:orientation="horizontal">
+        <ImageButton
+            android:id="@+id/button_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/button_save"
+            android:src="@android:drawable/ic_menu_save"
+            android:text="@string/button_save" />
 
         <ImageButton
             android:id="@+id/button_play"

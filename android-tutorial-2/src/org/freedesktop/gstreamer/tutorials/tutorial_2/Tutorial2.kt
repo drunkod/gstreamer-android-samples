@@ -27,33 +27,49 @@ class Tutorial2 : Activity() {
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Initialize GStreamer and warn if it fails
-//        try {
-//            init(this)
-//        } catch (e: Exception) {
-//            Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
-//            finish()
-//            return
-//        }
         setContentView(R.layout.main)
 
         // Get references to TextView and EditText
         val textViewPrompt = findViewById<TextView>(R.id.textView_prompt)
         val pipelineInput = findViewById<View>(R.id.pipeline_input) as EditText
         // Set click listener on EditText to retrieve entered URI
-        pipelineInput.setOnClickListener {
-          val enteredUri = pipelineInput.text.toString()
+//        pipelineInput.setOnClickListener {
+//          val enteredUri = pipelineInput.text.toString()
+//
+//          // Validate and process URI here
+//
+//          // For example:
+//          if (enteredUri.isEmpty()) {
+//            textViewPrompt.error = "Please enter a URI"
+//          } else {
+//            // URI is valid, continue processing
+//              initializeGStreamer()
+//          }
+//        }
+        // Get reference to Button
+        val save = findViewById<View>(R.id.button_save) as ImageButton
 
-          // Validate and process URI here
+        // Set click listener on Button
+        save.setOnClickListener {
 
-          // For example:
-          if (enteredUri.isEmpty()) {
+          // Get the text entered in the EditText
+          val enteredText = pipelineInput.text.toString()
+
+          // Validate text
+          if (enteredText.isEmpty()) {
+            // Show error if empty
             textViewPrompt.error = "Please enter a URI"
           } else {
-            // URI is valid, continue processing
-              initializeGStreamer()
+            // Text is valid, continue processing
+
+            // For example, display Toast with entered URI
+//            Toast.makeText(this, enteredText, Toast.LENGTH_SHORT).show()
+             initializeGStreamer()
+
+             nativeInit()
           }
         }
+
         val play = findViewById<View>(R.id.button_play) as ImageButton
         play.setOnClickListener {
             isPlayingDesired = true
@@ -91,16 +107,16 @@ class Tutorial2 : Activity() {
     }
 
     private fun initializeGStreamer() {
-      // Initialize GStreamer
-      try {
           //  init(this) делает текущий контекст Activity
           //  доступным для инициализации собственного кода и ресурсов GStreamer.
-        init(this)
-      } catch (e: Exception) {
-        // error handling
-      }
-
-      nativeInit()
+        // Initialize GStreamer and warn if it fails
+        try {
+            init(this)
+        } catch (e: Exception) {
+            Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
+            finish()
+            return
+        }
     }
     // Set the URI to play, and record whether it is a local or remote file
     private fun setMediaUri() {
