@@ -51,6 +51,7 @@ class Tutorial2 : Activity() {
             textViewPrompt.error = "Please enter a URI"
           } else {
             // URI is valid, continue processing
+              initializeGStreamer()
           }
         }
         val play = findViewById<View>(R.id.button_play) as ImageButton
@@ -75,7 +76,9 @@ class Tutorial2 : Activity() {
         findViewById<View>(R.id.button_play).isEnabled = false
         findViewById<View>(R.id.button_stop).isEnabled = false
 //        nativeInit()
+
     }
+
 
     override fun onSaveInstanceState(outState: Bundle) {
         Log.d("GStreamer", "Saving state, playing:$isPlayingDesired")
@@ -87,6 +90,18 @@ class Tutorial2 : Activity() {
         super.onDestroy()
     }
 
+    private fun initializeGStreamer() {
+      // Initialize GStreamer
+      try {
+          //  init(this) делает текущий контекст Activity
+          //  доступным для инициализации собственного кода и ресурсов GStreamer.
+        init(this)
+      } catch (e: Exception) {
+        // error handling
+      }
+
+      nativeInit()
+    }
     // Set the URI to play, and record whether it is a local or remote file
     private fun setMediaUri() {
           nativeSetUri(mediaUri)
@@ -115,8 +130,7 @@ class Tutorial2 : Activity() {
         val activity: Activity = this
         runOnUiThread {
             activity.findViewById<View>(R.id.button_play).isEnabled = true
-            activity.findViewById<View>(R.id.button_stop).isEnabled =
-                true
+            activity.findViewById<View>(R.id.button_stop).isEnabled = true
         }
     }
 
