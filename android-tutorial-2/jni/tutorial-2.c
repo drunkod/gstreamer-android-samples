@@ -7,6 +7,7 @@
 #include "glib-2.0/glib/gtypes.h"
 #include "glib-2.0/glib/gmain.h"
 #include "gstreamer-1.0/gst/gstelement.h"
+#include "gstreamer-1.0/gst/gstparse.h"
 
 GST_DEBUG_CATEGORY_STATIC (debug_category);
 #define GST_CAT_DEFAULT debug_category
@@ -178,7 +179,7 @@ app_function (void *userdata)
     /* Build pipeline */
     data->pipeline =
             gst_parse_launch
-                    ("audiotestsrc ! audioconvert ! audioresample ! autoaudiosink", &error);
+                    ("audiotestsrc", &error);
     if (error) {
         gchar *message =
                 g_strdup_printf ("Unable to build pipeline: %s", error->message);
@@ -292,13 +293,32 @@ gst_native_set_uri (JNIEnv * env, jobject thiz, jstring uri)
 
 /* Set pipeline to PLAYING state */
 static void
-gst_native_play (JNIEnv * env, jobject thiz)
+gst_native_play (JNIEnv * env, jobject thiz, jstring text)
 {
+    GError *error = NULL;
+
     CustomData *data = GET_CUSTOM_DATA (env, thiz, custom_data_field_id);
     if (!data)
         return;
+    const gchar *pipeline_description = (*env)->GetStringUTFChars (env, text, NULL);
+    GST_DEBUG ("Setting URI to %s", pipeline_description);
+    /* Build pipeline */
+    data->pipeline =
+            gst_parse_launch
+                    (pipeline_description, &error);
+    if (error) {
+        gchar *message =
+                g_strdup_printf ("Unable to build pipeline: %s", error->message);
+        g_clear_error (&error);
+        set_ui_message (message, data);
+        g_free (message);
+        return;
+    }
     GST_DEBUG ("Setting state to PLAYING");
     gst_element_set_state (data->pipeline, GST_STATE_PLAYING);
+    // Освобождается выделенный ранее UTF-8 буфер char_text
+    (*env)->ReleaseStringUTFChars (env, text, pipeline_description);
+    gst_object_unref (data->pipeline);
 }
 
 /* Set pipeline to PAUSED state */
@@ -339,10 +359,10 @@ gst_native_class_init (JNIEnv * env, jclass klass)
 static JNINativeMethod native_methods[] = {
         {"nativeInit", "()V", (void *) gst_native_init},
         {"nativeFinalize", "()V", (void *) gst_native_finalize},
-        {"nativePlay", "()V", (void *) gst_native_play},
+        {"nativePlay", "(Ljava/lang/String;)V", (void *) gst_native_play},
         {"nativePause", "()V", (void *) gst_native_pause},
         {"nativeClassInit", "()Z", (void *) gst_native_class_init},
-        {"nativeSetUri", "(Ljava/lang/String;)V", (void *) gst_native_set_uri},
+        {"nativeSetUri", "(Ljava/lang/String;)V", (void *) gst_native_set_uri}
 };
 
 /* Library initializer */

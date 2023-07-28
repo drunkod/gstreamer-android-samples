@@ -13,7 +13,7 @@ import org.freedesktop.gstreamer.GStreamer.init
 class Tutorial2 : Activity() {
     private external fun nativeInit() // Initialize native code, build pipeline, etc
     private external fun nativeFinalize() // Destroy pipeline and shutdown native code
-    private external fun nativePlay() // Set pipeline to PLAYING
+    private external fun nativePlay(text: String?) // Set pipeline to PLAYING
     private external fun nativePause() // Set pipeline to PAUSED
     private val nativeCustomData: Long = 0 // Native code will use this to keep private data:
     private var isPlayingDesired = false // Whether the user asked to go to PLAYING
@@ -73,7 +73,7 @@ class Tutorial2 : Activity() {
         val play = findViewById<View>(R.id.button_play) as ImageButton
         play.setOnClickListener {
             isPlayingDesired = true
-            nativePlay()
+            nativePlay(pipelineInput.text.toString())
         }
         val pause = findViewById<View>(R.id.button_stop) as ImageButton
         pause.setOnClickListener {
@@ -137,7 +137,8 @@ class Tutorial2 : Activity() {
         //        setMediaUri() frizee!!!
         // Restore previous playing state
         if (isPlayingDesired) {
-            nativePlay()
+            val pipelineInput = findViewById<View>(R.id.pipeline_input) as EditText
+            nativePlay(pipelineInput.text.toString())
         } else {
             nativePause()
         }
