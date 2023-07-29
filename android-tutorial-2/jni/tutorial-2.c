@@ -228,14 +228,20 @@ app_function (void *userdata)
 static void
 gst_native_init (JNIEnv * env, jobject thiz)
 {
+    //    выделяет память для CustomData
     CustomData *data = g_new0 (CustomData, 1);
+    // передает указатель на класс с помощью SET_CUSTOM_DATA, поэтому он запоминается.
     SET_CUSTOM_DATA (env, thiz, custom_data_field_id, data);
     GST_DEBUG_CATEGORY_INIT (debug_category, "tutorial-2", 0,
                              "Android tutorial 2");
     gst_debug_set_threshold_for_name ("tutorial-2", GST_LEVEL_DEBUG);
     GST_DEBUG ("Created CustomData at %p", data);
+    // Указатель на класс приложения также сохраняется CustomData
+    // ( используется глобальная ссылка ), поэтому его методы
+    // можно вызывать позже.
     data->app = (*env)->NewGlobalRef (env, thiz);
     GST_DEBUG ("Created GlobalRef for app object at %p", data->app);
+    // Finally, a thread is created and it starts running the app_function() method.
     pthread_create (&gst_app_thread, NULL, &app_function, data);
 }
 
@@ -318,7 +324,7 @@ gst_native_play (JNIEnv * env, jobject thiz, jstring text)
     gst_element_set_state (data->pipeline, GST_STATE_PLAYING);
     // Освобождается выделенный ранее UTF-8 буфер char_text
     (*env)->ReleaseStringUTFChars (env, text, pipeline_description);
-    gst_object_unref (data->pipeline);
+//    gst_object_unref (data->pipeline);
 }
 
 /* Set pipeline to PAUSED state */
