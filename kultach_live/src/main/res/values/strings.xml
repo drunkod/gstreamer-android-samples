@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Kultach live</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">KULTACH\nLIVE</string>
+    <string name="button_play">Play</string>
+    <string name="button_stop">Stop</string>
+    <string name="button_save">Save</string>
+</resources>
