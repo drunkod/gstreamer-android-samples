@@ -1,6 +1,7 @@
 package org.freedesktop.gstreamer.tutorials.tutorial_2
 
-import android.app.Activity
+import android.app.NativeActivity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -10,7 +11,7 @@ import android.widget.TextView
 import android.widget.Toast
 import org.freedesktop.gstreamer.GStreamer.init
 
-class Tutorial2 : Activity() {
+class Tutorial2 : NativeActivity() {
     private external fun nativeInit() // Initialize native code, build pipeline, etc
     private external fun nativeFinalize() // Destroy pipeline and shutdown native code
     private external fun nativePlay(text: String?) // Set pipeline to PLAYING
@@ -144,7 +145,7 @@ class Tutorial2 : Activity() {
         }
 
         // Re-enable buttons, now that GStreamer is initialized
-        val activity: Activity = this
+        val activity: NativeActivity = this
         runOnUiThread {
             activity.findViewById<View>(R.id.button_play).isEnabled = true
             activity.findViewById<View>(R.id.button_stop).isEnabled = true
@@ -156,9 +157,18 @@ class Tutorial2 : Activity() {
         private external fun nativeClassInit(): Boolean // Initialize native class: cache Method IDs for callbacks
 
         init {
+            System.loadLibrary("na_subclass_jni")
             System.loadLibrary("gstreamer_android")
             System.loadLibrary("tutorial-2")
             nativeClassInit()
         }
     }
+
+        override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        Log.d("onNewIntent", "Intent:${intent.dataString}")
+        notifyOnNewIntent()
+    }
+
+    private external fun notifyOnNewIntent()
 }
