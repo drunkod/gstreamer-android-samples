@@ -8,6 +8,8 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+
+
 import org.freedesktop.gstreamer.GStreamer.init
 
 class Tutorial2 : Activity() {
