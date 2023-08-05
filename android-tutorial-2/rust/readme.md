@@ -14,5 +14,5 @@ cargo install cargo-ndk
 PKG_CONFIG_ALLOW_CROSS=1 cargo ndk -t arm64-v8a -o ./../src/main/jniLibs/  build
 
 link to android gstreamer pkgconfig
-# export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/home/alex/Документы/android/gstreamer-android-samples/gstreamer-1.0-android-universal-1.22.5/arm64/lib/pkgconfig/
+[//]: # export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/home/alex/Документы/android/gstreamer-android-samples/gstreamer-1.0-android-universal-1.22.5/arm64/lib/pkgconfig/
 
